@@ -32,7 +32,7 @@ public class Swagger2Config
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
                 .apis(RequestHandlerSelectors
-                              .basePackage("com.lambdaschool.usermodel"))
+                              .basePackage("com.lambdaschool.airbnb.airbnbapi"))
                 .paths(PathSelectors.regex("/.*"))
                 .build()
                 .apiInfo(apiEndPointsInfo());
@@ -45,13 +45,13 @@ public class Swagger2Config
      */
     private ApiInfo apiEndPointsInfo()
     {
-        return new ApiInfoBuilder().title("User Model Example")
-                .description("User Model Example")
-                .contact(new Contact("John Mitchell",
+        return new ApiInfoBuilder().title("Air BnB Optimal Price")
+                .description("Air BnB Optimal Price helps Air BnB hosts choose the best price for their property based on numerous factors.")
+                .contact(new Contact("Nathan DeSpain",
                                      "http://www.lambdaschool.com",
-                                     "john@lambdaschool.com"))
+                                     "nathan.despain@lambdastudents.com"))
                 .license("MIT")
-                .licenseUrl("https://github.com/LambdaSchool/java-usermodel/blob/master/LICENSE")
+                .licenseUrl("https://github.com/Air-BnB-2-BW/back-end/blob/master/LICENSE")
                 .version("1.0.0")
                 .build();
     }
