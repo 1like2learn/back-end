@@ -1,16 +1,25 @@
 package com.lambdaschool.airbnb.airbnbapi.services;
 
-import com.lambdaschool.airbnb.airbnbapi.exceptions.ResourceFoundException;
 import com.lambdaschool.airbnb.airbnbapi.exceptions.ResourceNotFoundException;
 import com.lambdaschool.airbnb.airbnbapi.models.Listing;
+import com.lambdaschool.airbnb.airbnbapi.models.Role;
+import com.lambdaschool.airbnb.airbnbapi.models.User;
+import com.lambdaschool.airbnb.airbnbapi.models.UserRoles;
 import com.lambdaschool.airbnb.airbnbapi.repository.ListingRepository;
 import com.lambdaschool.airbnb.airbnbapi.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.common.exceptions.UnauthorizedClientException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**Implements ListingService**/
+@Transactional
+@Service(value = "listingService")
 public class ListingServiceImpl implements ListingService{
 
     //connects the two repositories we will need
@@ -19,6 +28,10 @@ public class ListingServiceImpl implements ListingService{
 
     @Autowired
     private UserRepository userrepos;
+
+    @Autowired
+    private HelperFunctions helperFunctions;
+
 
     /**Implements the Methods of ListingService**/
     //give us a list of all listings
@@ -42,18 +55,32 @@ public class ListingServiceImpl implements ListingService{
             .orElseThrow(()-> new ResourceNotFoundException("Listing ID " + " not Found!"));
     }
 
+    @Override
+    public List<Listing> findListingsByUserId(long id) {
+        return listingrepos.findListingsByUserUserid(id);
+    }
+
     //delete a listing based on its id
+    @Transactional
     @Override
     public void delete(long id) {
 
         //find the listing and make sure it exists
         Listing listingToDelete = listingrepos.findById(id)
             .orElseThrow(()-> new ResourceNotFoundException("Listing ID " + " not Found!"));
-        //delete the listing
-        listingrepos.delete(listingToDelete);
+
+        if(helperFunctions.isUserAuthorizedForListing(id)){
+
+            //delete the listing
+            listingrepos.delete(listingToDelete);
+        }else{
+
+            throw new UnauthorizedClientException("User is not authorized to update this listing");
+        }
     }
 
     //save a listing
+    @Transactional
     @Override
     public Listing save(Listing listing) {
 
@@ -64,7 +91,13 @@ public class ListingServiceImpl implements ListingService{
         if (listing.getListingid() != 0){
             listingrepos.findById(listing.getListingid())
                 .orElseThrow(()-> new ResourceNotFoundException("Listing ID " + " not Found!"));
-            newListing.setListingid(listing.getListingid());
+            if(helperFunctions.isUserAuthorizedForListing(listing.getListingid())){
+
+                newListing.setListingid(listing.getListingid());
+            }else{
+
+                throw new UnauthorizedClientException("User is not authorized to update this listing");
+            }
         }
 
         //tack stuff onto listing
@@ -90,6 +123,7 @@ public class ListingServiceImpl implements ListingService{
     }
 
     //update a listing
+    @Transactional
     @Override
     public Listing update(Listing listing, long listingid) {
 
@@ -152,7 +186,12 @@ public class ListingServiceImpl implements ListingService{
                 .orElseThrow(()-> new ResourceNotFoundException("User ID " + " not Found!")));
         }
 
-        //save the new listing
-        return listingrepos.save(currentListing);
+        if(helperFunctions.isUserAuthorizedForListing(listingid)) {
+            //save the new listing
+            currentListing = listingrepos.save(currentListing);
+        }else{
+            throw new UnauthorizedClientException("User is not authorized to update this listing");
+        }
+        return currentListing;
     }
 }

@@ -10,7 +10,9 @@ public interface ListingService {
     //Admin only, returns list of all listings
     List<Listing> findAll();
 
-    //Admins get access and users can access Listings they've made
+    List<Listing> findListingsByUserId(long id);
+
+    //Admins get access to Listings by id
     Listing findByListingId(long id);
 
     //Admins get access and users can delete Listings they've made

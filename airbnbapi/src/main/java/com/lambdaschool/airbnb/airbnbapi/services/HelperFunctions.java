@@ -18,4 +18,6 @@ public interface HelperFunctions
      */
     List<ValidationError> getConstraintViolation(Throwable cause);
 
+    //checks if a user is an admin or if they created a listing and returns a boolean
+    Boolean isUserAuthorizedForListing(long id);
 }

@@ -1,6 +1,16 @@
 package com.lambdaschool.airbnb.airbnbapi.services;
 
+import com.lambdaschool.airbnb.airbnbapi.exceptions.ResourceNotFoundException;
+import com.lambdaschool.airbnb.airbnbapi.models.Listing;
+import com.lambdaschool.airbnb.airbnbapi.models.User;
+import com.lambdaschool.airbnb.airbnbapi.models.UserRoles;
 import com.lambdaschool.airbnb.airbnbapi.models.ValidationError;
+import com.lambdaschool.airbnb.airbnbapi.repository.ListingRepository;
+import com.lambdaschool.airbnb.airbnbapi.repository.RoleRepository;
+import com.lambdaschool.airbnb.airbnbapi.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.validation.ConstraintViolation;
@@ -12,6 +22,11 @@ import java.util.List;
 public class HelperFunctionsImpl
         implements HelperFunctions
 {
+    @Autowired
+    UserRepository userrepos;
+
+    @Autowired
+    ListingRepository listingrepos;
     public List<ValidationError> getConstraintViolation(Throwable cause)
     {
         // Find any data violations that might be associated with the error and report them
@@ -39,5 +54,36 @@ public class HelperFunctionsImpl
             }
         }
         return listVE;
+    }
+
+    @Override
+    public Boolean isUserAuthorizedForListing(long id) {
+
+        //find the name of the currently logged in User
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUsername = authentication.getName();
+
+        //find the user with that name
+        User currentUser = userrepos.findByUsername(currentUsername);
+
+        //variable that represents whether or not the currently logged in user is allowed to alter a listing
+        Boolean authorized = false;
+
+        //find listing by provided id
+        Listing currentLisitng = listingrepos.findById(id)
+            .orElseThrow(()-> new ResourceNotFoundException("Listing ID " + " not Found!"));
+
+        //if the user is an admin or owns the listing set them as authorized
+        for(UserRoles ur: currentUser.getRoles()){
+
+            if(ur.getRole().getName() == "ADMIN") {
+
+                authorized = true;
+            }else if (currentLisitng.getUser() == currentUser){
+
+                authorized = true;
+            }
+        }
+        return authorized;
     }
 }
