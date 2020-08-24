@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/air-bnb-backend.iml" filepath="$PROJECT_DIR$/.idea/air-bnb-backend.iml" />
+      <module fileurl="file://$PROJECT_DIR$/airbnbapi/airbnbapi.iml" filepath="$PROJECT_DIR$/airbnbapi/airbnbapi.iml" />
+    </modules>
+  </component>
+</project>
