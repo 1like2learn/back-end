@@ -25,8 +25,8 @@ public class Listing extends Auditable{
     private String cancellationpolicy;
     private double cleaningfee;
     private String freeparking;
-    private boolean wifi;
-    private boolean cabletv;
+    private Boolean wifi;
+    private Boolean cabletv;
 
     //Joins the users and listings tables along the userid column
     @ManyToOne
@@ -49,8 +49,8 @@ public class Listing extends Auditable{
         String cancellationpolicy,
         double cleaningfee,
         String freeparking,
-        boolean wifi,
-        boolean cabletv,
+        Boolean wifi,
+        Boolean cabletv,
         User user) {
         this.zipcode = zipcode;
         this.propertytype = propertytype;
@@ -156,19 +156,19 @@ public class Listing extends Auditable{
         this.freeparking = freeparking;
     }
 
-    public boolean isWifi() {
+    public Boolean isWifi() {
         return wifi;
     }
 
-    public void setWifi(boolean wifi) {
+    public void setWifi(Boolean wifi) {
         this.wifi = wifi;
     }
 
-    public boolean isCabletv() {
+    public Boolean isCabletv() {
         return cabletv;
     }
 
-    public void setCabletv(boolean cabletv) {
+    public void setCabletv(Boolean cabletv) {
         this.cabletv = cabletv;
     }
 
