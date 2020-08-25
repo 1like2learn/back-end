@@ -57,7 +57,9 @@ public class ResourceServerConfig
                 .antMatchers("/oauth/revoke-token",
                     "/logout")
                 .authenticated()
-            .antMatchers("/listings/listing/**", "/listings/myListings", "/listings/listing")
+            .antMatchers(HttpMethod.GET, "/users/user/**")
+            .hasAnyRole("USER")
+            .antMatchers( "/listings/listing/**", "/listings/myListings", "/listings/listing")
             .hasAnyRole("USER")
                 .antMatchers("/users/**","/roles/**","/listings/**")
                 .hasAnyRole("ADMIN")

@@ -179,4 +179,38 @@ public class Listing extends Auditable{
     public void setUser(User user) {
         this.user = user;
     }
+
+    @JsonIgnore
+    public String getRequestBody() {
+        String myString = "{" +
+            " \"zipcode\":" + zipcode +
+            ", \"property_type\":" + "\"" + propertytype + "\"" +
+            ", \"square_footage\":" + squarefeet +
+            ", \"bedrooms\":" + bedrooms +
+            ", \"bathrooms\":" + bathrooms +
+            ", \"review_score_rating\":" + reviewscore +
+            ", \"accommodates\":" + accomodates +
+            ", \"cancellation_policy\":" + "\"" + cancellationpolicy + "\"" +
+            ", \"cleaning_fee\":" + cleaningfee +
+            ", \"free_parking\":" + "\"" + (freeparking? "yes": "no") + "\"" +
+            ", \"wifi\":" + "\"" + (wifi? "yes": "no") + "\"" +
+            ", \"cable_tv\":" + "\"" + (cabletv? "yes": "no") + "\"" +
+            '}';
+        System.out.println(myString);
+        return myString;
+    }
+//    {
+//        "zipcode": 10453,
+//        "property_type": "Apartment",
+//        "square_footage": 4500,
+//        "bedrooms": 7,
+//        "bathrooms": 3.0,
+//        "review_score_rating": 75.0,
+//        "accommodates": 15,
+//        "cancellation_policy": "strict",
+//        "cleaning_fee": 300.0,
+//        "free_parking": "yes",
+//        "wifi": "yes",
+//        "cable_tv": "yes"
+//    }
 }
