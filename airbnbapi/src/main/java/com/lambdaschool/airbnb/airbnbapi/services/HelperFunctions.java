@@ -1,6 +1,7 @@
 package com.lambdaschool.airbnb.airbnbapi.services;
 
 import com.lambdaschool.airbnb.airbnbapi.models.Listing;
+import com.lambdaschool.airbnb.airbnbapi.models.Prediction;
 import com.lambdaschool.airbnb.airbnbapi.models.ValidationError;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -25,5 +26,5 @@ public interface HelperFunctions
     Boolean isUserAuthorizedForListing(long id);
 
     //send data to an external api and receive a price recommendation
-    long giveListingReceivePrice(Listing listing);
+    Prediction giveListingReceivePrice(Listing listing);
 }

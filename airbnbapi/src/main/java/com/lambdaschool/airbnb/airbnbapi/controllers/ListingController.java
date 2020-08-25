@@ -1,6 +1,7 @@
 package com.lambdaschool.airbnb.airbnbapi.controllers;
 
 import com.lambdaschool.airbnb.airbnbapi.models.Listing;
+import com.lambdaschool.airbnb.airbnbapi.models.Prediction;
 import com.lambdaschool.airbnb.airbnbapi.models.User;
 import com.lambdaschool.airbnb.airbnbapi.services.HelperFunctions;
 import com.lambdaschool.airbnb.airbnbapi.services.ListingService;
@@ -31,6 +32,9 @@ public class ListingController {
     //connect to user services
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private HelperFunctions helperFunctions;
 
     //list all listings
     //admins only
@@ -80,8 +84,10 @@ public class ListingController {
             .toUri();
         responseHeaders.setLocation(newUserURI);
 
+        Prediction prediction = helperFunctions.giveListingReceivePrice(newListing);
+        System.out.println(prediction.getPrediction());
         //return the location of the new listing
-        return new ResponseEntity<>(null, responseHeaders, HttpStatus.CREATED);
+        return new ResponseEntity<>(prediction, responseHeaders, HttpStatus.CREATED);
     }
 
     //update an entire listing object

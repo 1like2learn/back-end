@@ -1,10 +1,7 @@
 package com.lambdaschool.airbnb.airbnbapi.services;
 
 import com.lambdaschool.airbnb.airbnbapi.exceptions.ResourceNotFoundException;
-import com.lambdaschool.airbnb.airbnbapi.models.Listing;
-import com.lambdaschool.airbnb.airbnbapi.models.User;
-import com.lambdaschool.airbnb.airbnbapi.models.UserRoles;
-import com.lambdaschool.airbnb.airbnbapi.models.ValidationError;
+import com.lambdaschool.airbnb.airbnbapi.models.*;
 import com.lambdaschool.airbnb.airbnbapi.repository.ListingRepository;
 import com.lambdaschool.airbnb.airbnbapi.repository.RoleRepository;
 import com.lambdaschool.airbnb.airbnbapi.repository.UserRepository;
@@ -14,9 +11,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.client.RestTemplate;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +29,7 @@ public class HelperFunctionsImpl
 
     @Autowired
     ListingRepository listingrepos;
+    
     public List<ValidationError> getConstraintViolation(Throwable cause)
     {
         // Find any data violations that might be associated with the error and report them
@@ -90,10 +91,14 @@ public class HelperFunctionsImpl
     }
 
     @Override
-    @RequestMapping(method = RequestMethod.POST)
-    public long giveListingReceivePrice(Listing listing){
+    public Prediction giveListingReceivePrice(Listing listing) {
 
-        long recomendedPrice = 0;
-        return recomendedPrice;
+
+        final String uri = "https://bw-air-bnb-2.herokuapp.com/predict";
+        RestTemplate restTemplate = new RestTemplate();
+        Prediction prediction = restTemplate.postForObject(uri, listing.getRequestBody(), Prediction.class);
+//        Prediction prediction = restTemplate.getForObject(uri, Prediction.class);
+
+        return prediction;
     }
 }
