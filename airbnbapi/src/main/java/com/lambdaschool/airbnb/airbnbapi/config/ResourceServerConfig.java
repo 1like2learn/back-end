@@ -54,22 +54,13 @@ public class ResourceServerConfig
                         "/createnewuser",
                         "/login")
                 .permitAll()
-                .antMatchers(HttpMethod.POST,
-                        "/users/**")
+                .antMatchers("/users/**","/roles/**","/listings/**")
                 .hasAnyRole("ADMIN")
-                .antMatchers(HttpMethod.DELETE,
-                        "/users/**")
-                .hasAnyRole("ADMIN")
-                .antMatchers(HttpMethod.PUT,
-                        "/users/**")
-                .hasAnyRole("ADMIN")
-                .antMatchers("/users/**",
-                        "/useremails/**",
-                        "/oauth/revoke-token",
-                        "/logout")
+                .antMatchers("/listings/listing/**", "/myListings", "/listing",  "/listing/**")
+                .hasAnyRole("USERS")
+                .antMatchers("/oauth/revoke-token",
+                        "/logout", "/myInfo")
                 .authenticated()
-                .antMatchers("/roles/**")
-                .hasAnyRole("ADMIN")
                 .and()
                 .exceptionHandling()
                 .accessDeniedHandler(new OAuth2AccessDeniedHandler());
@@ -79,8 +70,7 @@ public class ResourceServerConfig
         // disable the creation and use of Cross Site Request Forgery Tokens.
         // These tokens require coordination with the front end client that is beyond the scope of this class.
         // See https://www.yawintutor.com/how-to-enable-and-disable-csrf/ for more information
-        http.csrf()
-                .disable();
+        http.csrf().disable();
 
         // this disables all of the security response headers. This is necessary for access to the H2 Console.
         // Normally, Spring Security would include headers such as
@@ -90,12 +80,9 @@ public class ResourceServerConfig
         //     X-Content-Type-Options: nosniff
         //     X-Frame-Options: DENY
         //     X-XSS-Protection: 1; mode=block
-        http.headers()
-                .frameOptions()
-                .disable();
+        http.headers().frameOptions().disable();
 
         // This application implements its own logout procedure so disable the one built into Spring Security
-        http.logout()
-                .disable();
+        http.logout().disable();
     }
 }
