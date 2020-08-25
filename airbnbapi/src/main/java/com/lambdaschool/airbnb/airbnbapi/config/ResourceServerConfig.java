@@ -54,13 +54,13 @@ public class ResourceServerConfig
                         "/createnewuser",
                         "/login")
                 .permitAll()
+                .antMatchers("/oauth/revoke-token",
+                    "/logout")
+                .authenticated()
+            .antMatchers("/listings/listing/**", "/listings/myListings", "/listings/listing")
+            .hasAnyRole("USER")
                 .antMatchers("/users/**","/roles/**","/listings/**")
                 .hasAnyRole("ADMIN")
-                .antMatchers("/listings/listing/**", "/myListings", "/listing",  "/listing/**")
-                .hasAnyRole("USERS")
-                .antMatchers("/oauth/revoke-token",
-                        "/logout", "/myInfo")
-                .authenticated()
                 .and()
                 .exceptionHandling()
                 .accessDeniedHandler(new OAuth2AccessDeniedHandler());

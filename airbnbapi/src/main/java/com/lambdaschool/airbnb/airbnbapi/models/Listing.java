@@ -24,7 +24,7 @@ public class Listing extends Auditable{
     private int accomodates;
     private String cancellationpolicy;
     private double cleaningfee;
-    private String freeparking;
+    private Boolean freeparking;
     private Boolean wifi;
     private Boolean cabletv;
 
@@ -48,7 +48,7 @@ public class Listing extends Auditable{
         int accomodates,
         String cancellationpolicy,
         double cleaningfee,
-        String freeparking,
+        Boolean freeparking,
         Boolean wifi,
         Boolean cabletv,
         User user) {
@@ -148,11 +148,11 @@ public class Listing extends Auditable{
         this.cleaningfee = cleaningfee;
     }
 
-    public String getFreeparking() {
+    public Boolean getFreeparking() {
         return freeparking;
     }
 
-    public void setFreeparking(String freeparking) {
+    public void setFreeparking(Boolean freeparking) {
         this.freeparking = freeparking;
     }
 

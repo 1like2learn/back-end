@@ -1,6 +1,9 @@
 package com.lambdaschool.airbnb.airbnbapi.services;
 
+import com.lambdaschool.airbnb.airbnbapi.models.Listing;
 import com.lambdaschool.airbnb.airbnbapi.models.ValidationError;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.List;
 
@@ -20,4 +23,7 @@ public interface HelperFunctions
 
     //checks if a user is an admin or if they created a listing and returns a boolean
     Boolean isUserAuthorizedForListing(long id);
+
+    //send data to an external api and receive a price recommendation
+    long giveListingReceivePrice(Listing listing);
 }

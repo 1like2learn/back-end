@@ -38,6 +38,7 @@ public class SecurityUserServiceImpl
             throws
             ResourceNotFoundException
     {
+
         User user = userrepos.findByUsername(s.toLowerCase());
         if (user == null)
         {

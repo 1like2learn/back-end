@@ -194,4 +194,11 @@ public class ListingServiceImpl implements ListingService{
         }
         return currentListing;
     }
+
+    @Transactional
+    @Override
+    public void deleteAll() {
+
+        listingrepos.deleteAll();
+    }
 }

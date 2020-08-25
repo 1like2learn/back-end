@@ -24,4 +24,6 @@ public interface ListingService {
     //Admins get access and users can update Listings they've made
     Listing update(Listing listing, long listinid);
 
+    //nobody but the system is allowed to delete all
+    void deleteAll();
 }
