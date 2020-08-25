@@ -52,9 +52,10 @@ public class ListingController {
     //list a user's listings given it's id
     @GetMapping(value = "/myListings", produces = "application/json")
     public ResponseEntity<?> getMyListings(){
-
+        System.out.println("myListings has been run");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUser = authentication.getName();
+        System.out.println(currentUser);
 
         List<Listing> listings = listingService.findListingsByUserId(
             userService.findByName(currentUser).getUserid());

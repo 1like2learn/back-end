@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
@@ -85,5 +87,13 @@ public class HelperFunctionsImpl
             }
         }
         return authorized;
+    }
+
+    @Override
+    @RequestMapping(method = RequestMethod.POST)
+    public long giveListingReceivePrice(Listing listing){
+
+        long recomendedPrice = 0;
+        return recomendedPrice;
     }
 }
