@@ -1,9 +1,6 @@
 package com.lambdaschool.airbnb.airbnbapi;
 
-import com.lambdaschool.airbnb.airbnbapi.models.Listing;
-import com.lambdaschool.airbnb.airbnbapi.models.Role;
-import com.lambdaschool.airbnb.airbnbapi.models.User;
-import com.lambdaschool.airbnb.airbnbapi.models.UserRoles;
+import com.lambdaschool.airbnb.airbnbapi.models.*;
 import com.lambdaschool.airbnb.airbnbapi.services.ListingService;
 import com.lambdaschool.airbnb.airbnbapi.services.RoleService;
 import com.lambdaschool.airbnb.airbnbapi.services.UserService;
@@ -46,6 +43,8 @@ public class SeedData implements CommandLineRunner {
             .add(new UserRoles(u1, r1));
         u1.getRoles()
             .add(new UserRoles(u1, r2));
+
+        u1.getUseremails().add(new Useremail(u1, "whatever@test.test"));
 
         u1 = userService.save(u1);
 

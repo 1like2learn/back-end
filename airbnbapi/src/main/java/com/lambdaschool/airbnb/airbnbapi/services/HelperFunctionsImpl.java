@@ -29,7 +29,7 @@ public class HelperFunctionsImpl
 
     @Autowired
     ListingRepository listingrepos;
-    
+
     public List<ValidationError> getConstraintViolation(Throwable cause)
     {
         // Find any data violations that might be associated with the error and report them

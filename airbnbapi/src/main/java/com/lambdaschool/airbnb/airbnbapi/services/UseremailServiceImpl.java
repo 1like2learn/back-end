@@ -68,9 +68,7 @@ public class UseremailServiceImpl
 
     @Transactional
     @Override
-    public Useremail update(
-            long useremailid,
-            String emailaddress)
+    public Useremail update(long useremailid, String emailaddress)
     {
         if (useremailrepos.findById(useremailid)
                 .isPresent())
