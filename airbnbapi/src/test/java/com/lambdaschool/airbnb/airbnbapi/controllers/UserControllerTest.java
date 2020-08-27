@@ -31,14 +31,13 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @WithMockUser(username = "admin", roles = {"USER", "ADMIN"})
-public class ListingControllerTest {
+public class UserControllerTest {
 
     List<Role> roles = new ArrayList<>();
     List<User> users = new ArrayList<>();
@@ -111,27 +110,10 @@ public class ListingControllerTest {
     }
 
     @Test
-    public void listAllListings() throws Exception{
-        String apiUrl = "/listings/listings";
+    public void listAllUsers() throws Exception{
+        String apiUrl = "/users/users";
 
-        Mockito.when(listingService.findAll()).thenReturn(listings);
-
-        RequestBuilder rb = MockMvcRequestBuilders.get(apiUrl)
-            .accept(MediaType.APPLICATION_JSON);
-        MvcResult r = mockMvc.perform(rb).andReturn();
-        String tr = r.getResponse().getContentAsString();
-
-        ObjectMapper mapper = new ObjectMapper();
-        String er = mapper.writeValueAsString(listings);
-
-        assertEquals(er, tr);
-    }
-
-    @Test
-    public void getListingById() throws Exception{
-        String apiUrl = "/listings/listing/1";
-
-        Mockito.when(listingService.findByListingId(1)).thenReturn(listings.get(0));
+        Mockito.when(userService.findAll()).thenReturn(users);
 
         RequestBuilder rb = MockMvcRequestBuilders.get(apiUrl)
             .accept(MediaType.APPLICATION_JSON);
@@ -139,20 +121,16 @@ public class ListingControllerTest {
         String tr = r.getResponse().getContentAsString();
 
         ObjectMapper mapper = new ObjectMapper();
-        String er = mapper.writeValueAsString(listings.get(0));
-
+        String er = mapper.writeValueAsString(users);
 
         assertEquals(er, tr);
     }
 
     @Test
-    public void getMyListings() throws Exception{
-        String apiUrl = "/listings/myListings";
+    public void getUserById() throws Exception{
+        String apiUrl = "/users/user/1";
 
-        User u = users.get(0);
-
-        Mockito.when(userService.findByName("admin")).thenReturn(u);
-        Mockito.when(listingService.findListingsByUserId(1)).thenReturn(listings);
+        Mockito.when(userService.findUserById(1)).thenReturn(users.get(0));
 
         RequestBuilder rb = MockMvcRequestBuilders.get(apiUrl)
             .accept(MediaType.APPLICATION_JSON);
@@ -160,126 +138,129 @@ public class ListingControllerTest {
         String tr = r.getResponse().getContentAsString();
 
         ObjectMapper mapper = new ObjectMapper();
-        String er = mapper.writeValueAsString(listings);
-
+        String er = mapper.writeValueAsString(users.get(0));
 
         assertEquals(er, tr);
     }
 
     @Test
-    public void addNewListing() throws Exception{
-        String apiUrl = "/listings/listing";
+    public void getUserByName() throws Exception{
+        String apiUrl ="/users/user/name/admin";
 
-        Listing l1 = new Listing(10453, "House",
-            2000, 3, 2, 70,
-            1, "strict", 300,
-            true, true, true, users.get(0));
-//        Listing l3WithId = new Listing(10453, "House",
-//            2000, 3, 2, 70,
-//            1, "strict", 300,
-//            true, true, true, users.get(0));
-//        l3WithId.setListingid(3);
+        Mockito.when(userService.findByName("admin")).thenReturn(users.get(0));
 
-        Prediction prediction = new Prediction(300.0);
-        Mockito.when(listingService.save(any(Listing.class))).thenReturn(l1);
-        Mockito.when(helperFunctions.giveListingReceivePrice(l1)).thenReturn(prediction);
+        RequestBuilder rb = MockMvcRequestBuilders.get(apiUrl)
+            .accept(MediaType.APPLICATION_JSON);
+        MvcResult r = mockMvc.perform(rb).andReturn();
+        String tr = r.getResponse().getContentAsString();
 
         ObjectMapper mapper = new ObjectMapper();
-        String listingString = mapper.writeValueAsString(l1);
+        String er = mapper.writeValueAsString(users.get(0));
+
+        assertEquals(er, tr);
+    }
+
+    @Test
+    public void getUserLikeName() throws Exception{
+        String apiUrl = "/users/user/name/like/ad";
+
+        Mockito.when(userService.findByNameContaining("ad")).thenReturn(users);
+
+        RequestBuilder rb = MockMvcRequestBuilders.get(apiUrl)
+            .accept(MediaType.APPLICATION_JSON);
+        MvcResult r = mockMvc.perform(rb).andReturn();
+        String tr = r.getResponse().getContentAsString();
+
+        ObjectMapper mapper = new ObjectMapper();
+        String er = mapper.writeValueAsString(users);
+
+        assertEquals(er, tr);
+    }
+
+    @Test
+    public void addNewUser() throws Exception{
+        String apiUrl = "/users/user";
+
+        User u = new User("admin",
+            "password",
+            "admin@lambdaschool.local");
+        u.setUserid(2);
+
+        Mockito.when(userService.save(any(User.class))).thenReturn(u);
+
+        ObjectMapper mapper = new ObjectMapper();
+        String userString = mapper.writeValueAsString(u);
 
         RequestBuilder rb = MockMvcRequestBuilders.post(apiUrl)
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
-            .content(listingString);
-        MvcResult r = mockMvc.perform(rb).andReturn();
-        String tr = r.getResponse().getContentAsString();
-
-        String er = mapper.writeValueAsString(prediction);
-
+            .content(userString);
 
         mockMvc.perform(rb)
             .andExpect(status().isCreated())
             .andDo(MockMvcResultHandlers.print());
-
-        assertEquals(er, tr);
     }
 
     @Test
-    public void updateFullListing() throws Exception{
-        String apiUrl = "/listings/listing/1";
+    public void updateFullUser() throws Exception{
+        String apiUrl = "/users/user/1";
 
-        Listing l1 = new Listing(10453, "House",
-            2000, 3, 2, 70,
-            1, "strict", 300,
-            true, true, true, users.get(0));
-        l1.setListingid(5);
+        User u = new User("admin",
+            "password",
+            "admin@admin.local");
+        u.setUserid(1);
 
-        Prediction prediction = new Prediction(300.0);
-
-        Mockito.when(listingService.save(any(Listing.class))).thenReturn(l1);
-        Mockito.when(helperFunctions.giveListingReceivePrice(l1)).thenReturn(prediction);
+        Mockito.when(userService.save(any(User.class))).thenReturn(u);
 
         ObjectMapper mapper = new ObjectMapper();
-        String listingString = mapper.writeValueAsString(l1);
+        String userString = mapper.writeValueAsString(u);
 
         RequestBuilder rb = MockMvcRequestBuilders.put(apiUrl)
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
-            .content(listingString);
-        MvcResult r = mockMvc.perform(rb).andReturn();
-        String tr = r.getResponse().getContentAsString();
-
-        String er = mapper.writeValueAsString(prediction);
+            .content(userString);
 
         mockMvc.perform(rb)
             .andExpect(status().isOk())
             .andDo(MockMvcResultHandlers.print());
 
-        assertEquals(er, tr);
     }
 
     @Test
-    public void updateListing() throws Exception{
-        String apiUrl = "/listings/listing/1";
+    public void updateUser() throws Exception{
+        String apiUrl = "/users/user/1";
 
-        Listing l1 = new Listing();
-        l1.setZipcode(72143);
+        User u = new User("admin",
+            "password",
+            "admin@lambdaschool.local");
+        u.setUserid(2);
+        u.setPrimaryemail("admin@admin.local");
 
-        Prediction prediction = new Prediction(300.0);
-
-        Mockito.when(listingService.update(any(Listing.class), any(Long.class))).thenReturn(l1);
-        Mockito.when(helperFunctions.giveListingReceivePrice(any(Listing.class))).thenReturn(prediction);
+        Mockito.when(userService.save(any(User.class))).thenReturn(u);
 
         ObjectMapper mapper = new ObjectMapper();
-        String listingString = mapper.writeValueAsString(l1);
+        String userString = mapper.writeValueAsString(u);
 
-        RequestBuilder rb = MockMvcRequestBuilders.patch(apiUrl)
+        RequestBuilder rb = MockMvcRequestBuilders.put(apiUrl)
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
-            .content(listingString);
-        MvcResult r = mockMvc.perform(rb).andReturn();
-        System.out.println("test response " + r);
-        String tr = r.getResponse().getContentAsString();
-        System.out.println("test true response " + tr);
-
-        String er = mapper.writeValueAsString(prediction);
+            .content(userString);
 
         mockMvc.perform(rb)
             .andExpect(status().isOk())
             .andDo(MockMvcResultHandlers.print());
-
-        assertEquals(er, tr);
     }
 
     @Test
-    public void deleteListingById() throws Exception{
-        String apiUrl = "/listings/listing/1";
+    public void deleteUserById() throws Exception{
 
-        RequestBuilder rb = MockMvcRequestBuilders.get(apiUrl)
+        String apiUrl = "/users/user/1";
+
+        RequestBuilder rb = MockMvcRequestBuilders.delete(apiUrl, "1")
+            .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON);
-
         mockMvc.perform(rb)
-            .andExpect(status().isOk())
+            .andExpect(status().is2xxSuccessful())
             .andDo(MockMvcResultHandlers.print());
     }
 }

@@ -56,10 +56,9 @@ public class ListingController {
     //list a user's listings given it's id
     @GetMapping(value = "/myListings", produces = "application/json")
     public ResponseEntity<?> getMyListings(){
-        System.out.println("myListings has been run");
+
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUser = authentication.getName();
-        System.out.println(currentUser);
 
         List<Listing> listings = listingService.findListingsByUserId(
             userService.findByName(currentUser).getUserid());
@@ -85,7 +84,6 @@ public class ListingController {
         responseHeaders.setLocation(newUserURI);
 
         Prediction prediction = helperFunctions.giveListingReceivePrice(newListing);
-        System.out.println(prediction.getPrediction());
         //return the location of the new listing
         return new ResponseEntity<>(prediction, responseHeaders, HttpStatus.CREATED);
     }
@@ -93,30 +91,38 @@ public class ListingController {
     //update an entire listing object
     //admins and users can delete their own
     @PutMapping(value = "/listing/{listingid}", consumes = "application/json")
-    public ResponseEntity<?> updateFullUser(
+    public ResponseEntity<?> updateFullListing(
         @Valid @RequestBody Listing updatingListing, @PathVariable long listingid)
     {
         updatingListing.setListingid(listingid);
-        listingService.save(updatingListing);
+        Listing updatedListing = listingService.save(updatingListing);
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        Prediction prediction = helperFunctions.giveListingReceivePrice(updatedListing);
+        return new ResponseEntity<>(prediction, HttpStatus.OK);
     }
 
     //updates specific fields
     //admins and users can delete their own
-    @PatchMapping(value = "/listing/{id}",
-        consumes = "application/json")
-    public ResponseEntity<?> updateUser(
-        @RequestBody Listing updateListing, @PathVariable long id)
+    @PatchMapping(value = "/listing/{id}", consumes = "application/json")
+    public ResponseEntity<?> updateListing(
+        @RequestBody Listing updateListing, @PathVariable Long id)
     {
-        listingService.update(updateListing, id);
-        return new ResponseEntity<>(HttpStatus.OK);
+        System.out.println("updated listing " + updateListing);
+        Listing updatedListing = listingService.update(updateListing, id);
+        System.out.println("updated listing mocked " + updatedListing);
+
+        Prediction prediction = new Prediction();
+        System.out.println("controller prediction created " + prediction.getPrediction());
+        prediction = helperFunctions.giveListingReceivePrice(updatedListing);
+        System.out.println("controller prediction equal helper mocked function result " + prediction.getPrediction());
+
+        return new ResponseEntity<>(prediction, HttpStatus.OK);
     }
 
     //delete a listing
     //admins and users can delete their own
     @DeleteMapping(value = "/listing/{id}")
-    public ResponseEntity<?> deleteUserById(@PathVariable long id)
+    public ResponseEntity<?> deleteListingById(@PathVariable long id)
     {
         listingService.delete(id);
         return new ResponseEntity<>(HttpStatus.OK);
