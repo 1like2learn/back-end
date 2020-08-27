@@ -180,6 +180,26 @@ public class Listing extends Auditable{
         this.user = user;
     }
 
+//    @Override
+//    public String toString() {
+//        return "Listing{" +
+//            "listingid=" + listingid +
+//            ", zipcode=" + zipcode +
+//            ", propertytype='" + propertytype +
+//            ", squarefeet=" + squarefeet +
+//            ", bedrooms=" + bedrooms +
+//            ", bathrooms=" + bathrooms +
+//            ", reviewscore=" + reviewscore +
+//            ", accomodates=" + accomodates +
+//            ", cancellationpolicy='" + cancellationpolicy +
+//            ", cleaningfee=" + cleaningfee +
+//            ", freeparking=" + freeparking +
+//            ", wifi=" + wifi +
+//            ", cabletv=" + cabletv +
+//            ", user=" + user +
+//            '}';
+//    }
+
     @JsonIgnore
     public String getRequestBody() {
         String myString = "{" +

@@ -2,14 +2,8 @@ package com.lambdaschool.airbnb.airbnbapi.services;
 
 import com.lambdaschool.airbnb.airbnbapi.exceptions.ResourceNotFoundException;
 import com.lambdaschool.airbnb.airbnbapi.models.Listing;
-import com.lambdaschool.airbnb.airbnbapi.models.Role;
-import com.lambdaschool.airbnb.airbnbapi.models.User;
-import com.lambdaschool.airbnb.airbnbapi.models.UserRoles;
 import com.lambdaschool.airbnb.airbnbapi.repository.ListingRepository;
-import com.lambdaschool.airbnb.airbnbapi.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedClientException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,7 +21,7 @@ public class ListingServiceImpl implements ListingService{
     private ListingRepository listingrepos;
 
     @Autowired
-    private UserRepository userrepos;
+    private UserService userService;
 
     @Autowired
     private HelperFunctions helperFunctions;
@@ -115,11 +109,14 @@ public class ListingServiceImpl implements ListingService{
         newListing.setCabletv(listing.isCabletv());
 
         //make sure the user that was sent exists
-        newListing.setUser(userrepos.findById(listing.getUser().getUserid())
-            .orElseThrow(()-> new ResourceNotFoundException("User ID " + " not Found!")));
+        newListing.setUser(userService.findUserById(listing.getUser().getUserid()));
 
+        System.out.println("newListing" + newListing);
+        System.out.println("listing" + listing);
         //save the new listing
-        return listingrepos.save(newListing);
+        Listing savedListing = listingrepos.save(listing);
+        System.out.println(savedListing);
+        return savedListing;
     }
 
     //update a listing
@@ -128,7 +125,8 @@ public class ListingServiceImpl implements ListingService{
     public Listing update(Listing listing, long listingid) {
 
         //give currentListing all the data from the listing it is updating
-        Listing currentListing = findByListingId(listingid);
+        Listing currentListing = listingrepos.findById(listingid)
+            .orElseThrow(()-> new ResourceNotFoundException("Listing ID " + " not Found!"));
 
         //update the data if the client has sent new data
         if (listing.getZipcode() != 0){
@@ -182,8 +180,7 @@ public class ListingServiceImpl implements ListingService{
         if (listing.getUser() != null) {
 
             //set currentListing's user and check the id of the sent user to make sure it exists
-            currentListing.setUser(userrepos.findById(listing.getUser().getUserid())
-                .orElseThrow(()-> new ResourceNotFoundException("User ID " + " not Found!")));
+            currentListing.setUser(userService.findUserById(listing.getUser().getUserid()));
         }
 
         if(helperFunctions.isUserAuthorizedForListing(listingid)) {

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
-@Component
+//@Component
 public class SeedData implements CommandLineRunner {
 
     @Autowired
