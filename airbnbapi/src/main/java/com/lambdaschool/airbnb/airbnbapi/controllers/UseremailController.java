@@ -85,10 +85,8 @@ public class UseremailController
      */
     @PutMapping("/useremail/{useremailid}/email/{emailaddress}")
     public ResponseEntity<?> updateUserEmail(
-            @PathVariable
-                    long useremailid,
-            @PathVariable
-                    String emailaddress)
+            @PathVariable long useremailid,
+            @PathVariable String emailaddress)
     {
         useremailService.update(useremailid,
                                 emailaddress);
@@ -106,14 +104,11 @@ public class UseremailController
      */
     @PostMapping(value = "/user/{userid}/email/{emailaddress}")
     public ResponseEntity<?> addNewUserEmail(
-            @PathVariable
-                    long userid,
-            @PathVariable
-                    String emailaddress) throws
-            URISyntaxException
+            @PathVariable long userid,
+            @PathVariable String emailaddress)
+        throws URISyntaxException
     {
-        Useremail newUserEmail = useremailService.save(userid,
-                                                       emailaddress);
+        Useremail newUserEmail = useremailService.save(userid, emailaddress);
 
         // set the location header for the newly created resource
         HttpHeaders responseHeaders = new HttpHeaders();

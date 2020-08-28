@@ -71,13 +71,10 @@ public class UserController
      */
     @GetMapping(value = "/user/name/{userName}",
             produces = "application/json")
-    public ResponseEntity<?> getUserByName(
-            @PathVariable
-                    String userName)
+    public ResponseEntity<?> getUserByName(@PathVariable String userName)
     {
         User u = userService.findByName(userName);
-        return new ResponseEntity<>(u,
-                                    HttpStatus.OK);
+        return new ResponseEntity<>(u, HttpStatus.OK);
     }
 
     /**
@@ -149,11 +146,8 @@ public class UserController
     @PutMapping(value = "/user/{userid}",
             consumes = "application/json")
     public ResponseEntity<?> updateFullUser(
-            @Valid
-            @RequestBody
-                    User updateUser,
-            @PathVariable
-                    long userid)
+            @Valid @RequestBody User updateUser,
+            @PathVariable long userid)
     {
         updateUser.setUserid(userid);
         userService.save(updateUser);
@@ -174,11 +168,8 @@ public class UserController
      */
     @PatchMapping(value = "/user/{id}",
             consumes = "application/json")
-    public ResponseEntity<?> updateUser(
-            @RequestBody
-                    User updateUser,
-            @PathVariable
-                    long id)
+    public ResponseEntity<?> updateUser(@RequestBody User updateUser,
+            @PathVariable long id)
     {
         userService.update(updateUser,
                            id);

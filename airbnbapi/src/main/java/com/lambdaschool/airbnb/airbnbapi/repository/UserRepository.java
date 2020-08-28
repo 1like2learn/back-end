@@ -8,8 +8,7 @@ import java.util.List;
 /**
  * The CRUD repository connecting User to the rest of the application
  */
-public interface UserRepository
-        extends CrudRepository<User, Long>
+public interface UserRepository extends CrudRepository<User, Long>
 {
     /**
      * Find a user based off over username
