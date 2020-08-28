@@ -111,11 +111,8 @@ public class ListingServiceImpl implements ListingService{
         //make sure the user that was sent exists
         newListing.setUser(userService.findUserById(listing.getUser().getUserid()));
 
-        System.out.println("newListing" + newListing);
-        System.out.println("listing" + listing);
         //save the new listing
         Listing savedListing = listingrepos.save(listing);
-        System.out.println(savedListing);
         return savedListing;
     }
 

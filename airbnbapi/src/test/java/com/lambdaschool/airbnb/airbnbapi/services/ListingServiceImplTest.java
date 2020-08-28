@@ -1,6 +1,7 @@
 package com.lambdaschool.airbnb.airbnbapi.services;
 
 import com.lambdaschool.airbnb.airbnbapi.AirbnbapiApplication;
+import com.lambdaschool.airbnb.airbnbapi.exceptions.ResourceNotFoundException;
 import com.lambdaschool.airbnb.airbnbapi.models.*;
 import com.lambdaschool.airbnb.airbnbapi.repository.ListingRepository;
 import com.lambdaschool.airbnb.airbnbapi.repository.UserRepository;
@@ -18,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.oauth2.common.exceptions.UnauthorizedClientException;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -106,6 +108,13 @@ public class ListingServiceImplTest {
         assertEquals(1, listingService.findByListingId(1).getListingid());
     }
 
+    @Test(expected = ResourceNotFoundException.class)
+    public void a_findByListingIdNotFound() {
+
+        Mockito.when(listingrepos.findById((long)100)).thenReturn(Optional.empty());
+        listingService.findByListingId(100);
+    }
+
     @Test
     public void a_findListingsByUserId() {
         Mockito.when(listingrepos.findListingsByUserUserid(1)).thenReturn(listings);
@@ -122,6 +131,19 @@ public class ListingServiceImplTest {
         assertEquals(1, listingService.findAll().size());
     }
 
+    @Test(expected = ResourceNotFoundException.class)
+    public void y_deleteIdNotFound() {
+        Mockito.when(listingrepos.findById((long)100)).thenReturn(Optional.empty());
+        listingService.delete(100);
+    }
+
+    @Test(expected = UnauthorizedClientException.class)
+    public void y_deleteIdUserNotAuth() {
+        Mockito.when(listingrepos.findById((long)100)).thenReturn(Optional.of(listings.get(0)));
+        Mockito.when(helperFunctions.isUserAuthorizedForListing(100)).thenReturn(Boolean.FALSE);
+        listingService.delete(100);
+    }
+
     @Test
     public void a_save() {
 
@@ -134,20 +156,6 @@ public class ListingServiceImplTest {
             true, true, true, u1);
         System.out.println(u1);
         l1.setListingid(0);
-//        {listingid=0,
-        //        zipcode=10453,
-        //        propertytype='House,
-        //        squarefeet=4000,
-        //        bedrooms=6,
-        //        bathrooms=2.0,
-        //        reviewscore=70.0,
-        //        accomodates=1,
-        //        cancellationpolicy='moderate,
-        //        cleaningfee=300.0,
-        //        freeparking=true,
-        //        wifi=true,
-        //        cabletv=true,
-        //        user=com.lambdaschool.airbnb.airbnbapi.models.User@76a2db3f}
         Listing l1andId = new Listing(10453, "",
             4000, 6, 2.0, 70.0,
             1, "", 300.0,
@@ -162,6 +170,39 @@ public class ListingServiceImplTest {
         System.out.println(l1);
 
         assertEquals(2, l1.getListingid());
+    }
+
+    @Test(expected = ResourceNotFoundException.class)
+    public void a_saveIdNotFound() {
+
+        User u1 = users.get(0);
+
+        Listing l1 = new Listing(10453, "House",
+            4000, 6, 2.0, 70.0,
+            1, "moderate", 300.0,
+            true, true, true, u1);
+        l1.setListingid(3);
+
+        Mockito.when(listingrepos.findById((long)100)).thenReturn(Optional.empty());
+        listingService.save(l1);
+
+    }
+
+    @Test(expected = UnauthorizedClientException.class)
+    public void a_saveIdUserNotAuthorized() {
+
+        User u1 = users.get(0);
+
+        Listing l1 = new Listing(10453, "House",
+            4000, 6, 2.0, 70.0,
+            1, "moderate", 300.0,
+            true, true, true, u1);
+        l1.setListingid(3);
+
+        Mockito.when(listingrepos.findById((long)3)).thenReturn(Optional.of(listings.get(0)));
+        Mockito.when(helperFunctions.isUserAuthorizedForListing(3)).thenReturn(Boolean.FALSE);
+        listingService.save(l1);
+
     }
 
     @Test
@@ -179,11 +220,49 @@ public class ListingServiceImplTest {
 
         assertEquals(12345, l.getZipcode());
     }
-//
-//    @Test
-//    public void z_deleteAll() {
-//
-//        listingService.deleteAll();
-//        assertEquals(0, listingService.findAll().size());
-//    }
+
+    @Test
+    public void b_updateOtherFields() {
+
+        User u1 = users.get(0);
+
+        Listing l1 = new Listing(10453, "House",
+            4000, 6, 2.0, 70.0,
+            1, "moderate", 300.0,
+            true, true, true, u1);
+        l1.setListingid(1);
+
+        Mockito.when(helperFunctions.isUserAuthorizedForListing(l1.getListingid())).thenReturn(true);
+        Mockito.when(listingrepos.findById((long)1)).thenReturn(Optional.of(l1));
+        Mockito.when(userService.findUserById(1)).thenReturn(u1);
+        Mockito.when(listingrepos.save(any(Listing.class))).thenReturn(l1);
+        Listing newl1 = listingService.update(l1, l1.getListingid());
+
+        assertEquals(l1.getZipcode(), newl1.getZipcode());
+        assertEquals(l1.getPropertytype(), newl1.getPropertytype());
+        assertEquals(l1.getSquarefeet(), newl1.getSquarefeet());
+        assertEquals(l1.getBedrooms(), newl1.getBedrooms());
+        assertEquals(l1.getAccomodates(), newl1.getAccomodates());
+        assertEquals(l1.getCancellationpolicy(), newl1.getCancellationpolicy());
+        assertEquals(l1.getFreeparking(), newl1.getFreeparking());
+        assertEquals(l1.isWifi(), newl1.isWifi());
+        assertEquals(l1.isCabletv(), newl1.isCabletv());
+    }
+
+    @Test(expected = UnauthorizedClientException.class)
+    public void b_updateOtherFieldsUserNotAuth() {
+
+        User u1 = users.get(0);
+
+        Listing l1 = new Listing(10453, "House",
+            4000, 6, 2.0, 70.0,
+            1, "moderate", 300.0,
+            true, true, true, u1);
+        l1.setListingid(1);
+
+        Mockito.when(helperFunctions.isUserAuthorizedForListing(1)).thenReturn(Boolean.FALSE);
+        Mockito.when(listingrepos.findById((long)1)).thenReturn(Optional.of(l1));
+        Mockito.when(userService.findUserById(1)).thenReturn(u1);
+        listingService.update(l1, 1);
+    }
 }

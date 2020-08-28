@@ -46,9 +46,7 @@ public class RoleServiceImpl
          * findAll returns an iterator set.
          * iterate over the iterator set and add each element to an array list.
          */
-        rolerepos.findAll()
-                .iterator()
-                .forEachRemaining(list::add);
+        rolerepos.findAll().iterator().forEachRemaining(list::add);
         return list;
     }
 
