@@ -58,11 +58,8 @@ public class OpenController
             produces = {"application/json"})
     public ResponseEntity<?> addSelf(
             HttpServletRequest httpServletRequest,
-            @Valid
-            @RequestBody
-                    UserMinimum newminuser)
-            throws
-            URISyntaxException
+            @Valid @RequestBody UserMinimum newminuser)
+            throws URISyntaxException
     {
         // Create the user
         User newuser = new User();
@@ -73,8 +70,7 @@ public class OpenController
 
         // add the default role of user
         Set<UserRoles> newRoles = new HashSet<>();
-        newRoles.add(new UserRoles(newuser,
-                                   roleService.findByName("USER")));
+        newRoles.add(new UserRoles(newuser, roleService.findByName("USER")));
         newuser.setRoles(newRoles);
 
         newuser = userService.save(newuser);
